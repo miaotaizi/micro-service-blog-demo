@@ -1,0 +1,115 @@
+version: '3.7'
+
+services:
+  sw-oap:
+    build:
+      context: ./skywalking/oap
+    restart: always
+    ports:
+      - 11800:11800
+      - 12800:12800
+    environment:
+      - SW_AUTHENTICATION=${SW_AUTHENTICATION}
+      - TZ=Asia/Shanghai
+      - SW_CORE_GRPC_HOST=sw-oap
+      - SW_CORE_REST_HOST=sw-oap
+
+  sw-ui:
+    build:
+      context: ./skywalking/ui
+    depends_on:
+      - sw-oap
+    links:
+      - sw-oap
+    restart: always
+    ports:
+      - 8080:8080
+    environment:
+      - security.user.admin.password=${SW_UI_ADMIN_PASSWORD}
+      - TZ=Asia/Shanghai
+      - SW_OAP_ADDRESS=sw-oap:12800
+
+  account-service:
+    build:
+      context: ./account-svc
+    image: blog-demo/account-svc
+    depends_on:
+      - sw-oap
+    links:
+      - sw-oap
+    volumes:
+      - ${SW_AGENT_CONFIG_DIR}:/skywalking/agent/config
+    environment:
+      - SW_AGENT_NAME=account-svc
+      - SW_AUTHENTICATION=${SW_AUTHENTICATION}
+      - SW_AGENT_COLLECTOR_BACKEND_SERVICES=${SW_AGENT_COLLECTOR_BACKEND_SERVICES}
+      - TZ=Asia/Shanghai
+      - SERVER_PORT
+
+  post-service:
+    build:
+      context: ./post-svc
+      args:
+        - SW_VERSION=${SW_VERSION}
+    image: blog-demo/post-svc
+    depends_on:
+      - sw-oap
+    links:
+      - sw-oap
+    volumes:
+      - ${SW_AGENT_CONFIG_DIR}:/skywalking/agent/config
+    environment:
+      - SW_AGENT_NAME=post-svc
+      - SW_AGENT_COLLECTOR_BACKEND_SERVICES=${SW_AGENT_COLLECTOR_BACKEND_SERVICES}
+      - SW_AUTHENTICATION=${SW_AUTHENTICATION}
+      - TZ=Asia/Shanghai
+      - SERVER_PORT
+
+  page-service:
+    build:
+      context: ./page
+      args:
+        - SW_VERSION=${SW_VERSION}
+    image: blog-demo/page
+    depends_on:
+      - sw-oap
+      - account-service
+      - post-service
+    links:
+      - sw-oap
+    volumes:
+      - ${SW_AGENT_CONFIG_DIR}:/skywalking/agent/config
+    environment:
+      - SW_AGENT_NAME=page
+      - SW_AGENT_COLLECTOR_BACKEND_SERVICES=${SW_AGENT_COLLECTOR_BACKEND_SERVICES}
+      - SW_AUTHENTICATION=${SW_AUTHENTICATION}
+      - TZ=Asia/Shanghai
+      - SERVER_PORT
+      - ACCOUNT_SERVICE_ENDPOINT
+      - POST_SERVICE_ENDPOINT
+  gateway-service:
+    build:
+      context: ./gateway
+      args:
+        - SW_VERSION=${SW_VERSION}
+    image: blog-demo/gateway
+    depends_on:
+      - sw-oap
+      - page-service
+      - account-service
+      - post-service
+    links:
+      - sw-oap
+    volumes:
+      - ${SW_AGENT_CONFIG_DIR}:/skywalking/agent/config
+    ports:
+      - 80:${SERVER_PORT}
+    environment:
+      - SW_AGENT_NAME=gateway
+      - SW_AGENT_COLLECTOR_BACKEND_SERVICES=${SW_AGENT_COLLECTOR_BACKEND_SERVICES}
+      - SW_AUTHENTICATION=${SW_AUTHENTICATION}
+      - TZ=Asia/Shanghai
+      - SERVER_PORT
+      - PAGE_SERVICE_ENDPOINT
+      - ACCOUNT_SERVICE_ENDPOINT
+      - POST_SERVICE_ENDPOINT

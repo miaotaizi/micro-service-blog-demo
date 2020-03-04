@@ -1,0 +1,6 @@
+
+blog:
+  account-svc-endpoint: ${ACCOUNT_SERVICE_ENDPOINT:http://localhost:8081}
+  post-svc-endpoint: ${POST_SERVICE_ENDPOINT:http://localhost:8082}
+server:
+  port: 8083

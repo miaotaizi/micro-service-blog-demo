@@ -1,0 +1,27 @@
+
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: post_page
+          uri: ${blog.page-svc-endpoint}
+          predicates:
+            - Path=/post/**
+          filters:
+            - PrefixPath=/pages
+        - id: accounts
+          uri: ${blog.account-svc-endpoint}
+          predicates:
+            - Path=/accounts
+          filters:
+            - PrefixPath=/v1
+        - id: posts
+          uri: ${blog.post-svc-endpoint}
+          predicates:
+            - Path=/posts
+          filters:
+            - PrefixPath=/v1
+blog:
+  page-svc-endpoint: ${PAGE_SERVICE_ENDPOINT:http://page-service:8080}
+  account-svc-endpoint: ${ACCOUNT_SERVICE_ENDPOINT:http://account-service:8080}
+  post-svc-endpoint: ${POST_SERVICE_ENDPOINT:http://post-service:8080}

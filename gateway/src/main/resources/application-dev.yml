@@ -1,0 +1,13 @@
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: post_page
+          uri: ${blog.page-svc-endpoint}/posts/page/foo
+          predicates:
+            - Path=/p/**
+          filters:
+            - AddRequestParameter=username, macro
+
+blog:
+  page-svc-endpoint: ${PAGE_SERVICE_ENDPOINT:http://localhost:8083}
