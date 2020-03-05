@@ -14,4 +14,10 @@
     <version>1.0.1</version>
     <description>Post API/DTO for sharing between Client/Server</description>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+    </dependencies>
 </project>

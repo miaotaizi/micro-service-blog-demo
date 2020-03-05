@@ -1,5 +1,2 @@
-blog:
-  account-svc-endpoint: ${ACCOUNT_SERVICE_ENDPOINT:http://account-service:8080}
-  post-svc-endpoint: ${POST_SERVICE_ENDPOINT:http://post-service:8080}
 server:
   port: 8081

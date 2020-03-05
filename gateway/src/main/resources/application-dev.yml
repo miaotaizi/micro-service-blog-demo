@@ -1,13 +1,21 @@
+logging:
+  level:
+    reactor:
+      netty: INFO
+    org:
+      springframework:
+        cloud:
+          gateway: TRACE
+
 spring:
   cloud:
     gateway:
-      routes:
-        - id: post_page
-          uri: ${blog.page-svc-endpoint}/posts/page/foo
-          predicates:
-            - Path=/p/**
-          filters:
-            - AddRequestParameter=username, macro
+      httpclient:
+        wiretap: true
+      httpserver:
+        wiretap: true
 
 blog:
+  account-svc-endpoint: ${ACCOUNT_SERVICE_ENDPOINT:http://localhost:8081}
+  post-svc-endpoint: ${POST_SERVICE_ENDPOINT:http://localhost:8082}
   page-svc-endpoint: ${PAGE_SERVICE_ENDPOINT:http://localhost:8083}

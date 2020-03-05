@@ -1,4 +1,3 @@
-
 spring:
   cloud:
     gateway:
@@ -22,6 +21,6 @@ spring:
           filters:
             - PrefixPath=/v1
 blog:
-  page-svc-endpoint: ${PAGE_SERVICE_ENDPOINT:http://page-service:8080}
-  account-svc-endpoint: ${ACCOUNT_SERVICE_ENDPOINT:http://account-service:8080}
-  post-svc-endpoint: ${POST_SERVICE_ENDPOINT:http://post-service:8080}
+  page-svc-endpoint: ${PAGE_SERVICE_ENDPOINT:http://page-service}
+  account-svc-endpoint: ${ACCOUNT_SERVICE_ENDPOINT:http://account-service}
+  post-svc-endpoint: ${POST_SERVICE_ENDPOINT:http://post-service}
